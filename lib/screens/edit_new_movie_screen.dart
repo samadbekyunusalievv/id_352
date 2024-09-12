@@ -63,13 +63,16 @@ class _EditNewMovieScreenState extends State<EditNewMovieScreen> {
   }
 
   void _saveEditedMovie() {
-    final movieName = _movieNameController.text;
+    final movieName = _movieNameController.text.isNotEmpty
+        ? _movieNameController.text
+        : widget.movie.movieName;
+
     final bingoOptions = _bingoControllers
         .where((controller) => controller.text.isNotEmpty)
         .map((controller) => controller.text)
         .toList();
 
-    if (movieName.isNotEmpty && bingoOptions.isNotEmpty) {
+    if (bingoOptions.isNotEmpty) {
       final editedMovie = MovieBingo(
         movieName: movieName,
         bingoOptions: bingoOptions,
