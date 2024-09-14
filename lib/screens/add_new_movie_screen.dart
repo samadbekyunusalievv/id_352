@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
@@ -108,7 +109,7 @@ class _AddNewMovieScreenState extends State<AddNewMovieScreen> {
                 margin: EdgeInsets.symmetric(horizontal: 20.w),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.r),
-                  image: DecorationImage(
+                  image: const DecorationImage(
                     image: AssetImage('assets/movie_banner.png'),
                     fit: BoxFit.cover,
                   ),
@@ -140,6 +141,7 @@ class _AddNewMovieScreenState extends State<AddNewMovieScreen> {
                         hintText: 'Name of the movie',
                         focusNode: _movieNameFocusNode,
                         onChanged: (value) => setState(() {}),
+                        maxLength: 55,
                       ),
                       SizedBox(height: 26.h),
                       Padding(
@@ -173,7 +175,7 @@ class _AddNewMovieScreenState extends State<AddNewMovieScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.h),
+              if (!_isAnyFieldFocused) SizedBox(height: 16.h),
               if (!_isAnyFieldFocused)
                 Center(
                   child: GestureDetector(
@@ -201,16 +203,16 @@ class _AddNewMovieScreenState extends State<AddNewMovieScreen> {
                           fontWeight: FontWeight.w700,
                         ),
                         colors: _isFormValid()
-                            ? [Color(0xFF19A1BE), Color(0xFF7D4192)]
+                            ? [const Color(0xFF19A1BE), const Color(0xFF7D4192)]
                             : [
-                                Color(0xFF19A1BE).withOpacity(0.5),
-                                Color(0xFF7D4192).withOpacity(0.5)
+                                const Color(0xFF19A1BE).withOpacity(0.5),
+                                const Color(0xFF7D4192).withOpacity(0.5)
                               ],
                       ),
                     ),
                   ),
                 ),
-              SizedBox(height: 20.h),
+              if (!_isAnyFieldFocused) SizedBox(height: 20.h),
             ],
           ),
         ],
@@ -223,6 +225,7 @@ class _AddNewMovieScreenState extends State<AddNewMovieScreen> {
     required String hintText,
     required FocusNode focusNode,
     required ValueChanged<String> onChanged,
+    int? maxLength,
   }) {
     return Container(
       width: 335.w,
@@ -239,7 +242,7 @@ class _AddNewMovieScreenState extends State<AddNewMovieScreen> {
         ),
       ),
       child: Container(
-        margin: EdgeInsets.all(1),
+        margin: const EdgeInsets.all(1),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
           color: Colors.transparent,
@@ -255,6 +258,11 @@ class _AddNewMovieScreenState extends State<AddNewMovieScreen> {
               fontWeight: FontWeight.w400,
               color: Colors.white,
             ),
+            inputFormatters: maxLength != null
+                ? [
+                    LengthLimitingTextInputFormatter(maxLength),
+                  ]
+                : [],
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
@@ -266,6 +274,7 @@ class _AddNewMovieScreenState extends State<AddNewMovieScreen> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
               isCollapsed: true,
+              counterText: '',
             ),
           ),
         ),

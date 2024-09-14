@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 
+import '../data/colors.dart';
+
 class TwiceDrinkDialog extends StatelessWidget {
   final VoidCallback onDone;
 
@@ -38,10 +40,7 @@ class TwiceDrinkDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.r),
                   border: const GradientBoxBorder(
                     gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFFC67A7),
-                        Color(0xFF5856D6),
-                      ],
+                      colors: MyColors.gradientColors,
                     ),
                     width: 2,
                   ),

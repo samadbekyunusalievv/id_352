@@ -1,15 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
+import 'package:id_352/data/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
-import '../data/colors.dart';
-
 class PremiumScreen extends StatelessWidget {
   const PremiumScreen({super.key});
-
   Future<void> setPremiumStatus(bool isPremium) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('premiumStatus', isPremium);
@@ -54,13 +54,11 @@ class PremiumScreen extends StatelessWidget {
         children: [
           Positioned(
             top: 0,
-            child: Container(
+            child: Image.asset(
+              width: MediaQuery.sizeOf(context).width,
               height: 477.h,
-              alignment: Alignment.center,
-              child: Image.asset(
-                'assets/banner_movies.png',
-                fit: BoxFit.cover,
-              ),
+              'assets/banner_movies.png',
+              fit: BoxFit.fill,
             ),
           ),
           Positioned(
@@ -71,6 +69,7 @@ class PremiumScreen extends StatelessWidget {
                 'Bingogo: \nline up',
                 textAlign: TextAlign.center,
                 style: TextStyle(
+                  fontFamily: 'Axiforma',
                   color: Colors.white,
                   fontSize: 40.sp,
                   fontWeight: FontWeight.w600,
@@ -82,10 +81,7 @@ class PremiumScreen extends StatelessWidget {
           Positioned(
             bottom: 0,
             child: SafeArea(
-              top: true,
-              bottom: false,
-              child: _widgetPremium(context),
-            ),
+                top: true, bottom: false, child: _widgetPremium(context)),
           ),
         ],
       ),
@@ -121,6 +117,7 @@ class PremiumScreen extends StatelessWidget {
                 Text(
                   'NO ADS',
                   style: TextStyle(
+                    fontFamily: 'Axiforma',
                     color: Colors.white,
                     fontSize: 16.sp,
                     height: 22 / 16,
@@ -135,10 +132,8 @@ class PremiumScreen extends StatelessWidget {
                   },
                   child: Container(
                     width: 311.w,
-                    padding: EdgeInsets.symmetric(
-                      vertical: 12.h,
-                      horizontal: 14.w,
-                    ),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.w),
                     decoration: BoxDecoration(
                       color: const Color.fromRGBO(24, 24, 27, 1),
                       borderRadius: BorderRadius.circular(10.r),
@@ -148,6 +143,7 @@ class PremiumScreen extends StatelessWidget {
                       'Get Purchase For \$0.49',
                       colors: MyColors.gradientColors,
                       style: TextStyle(
+                        fontFamily: 'Axiforma',
                         fontSize: 16.sp,
                         height: 25 / 15,
                         fontWeight: FontWeight.w700,
@@ -156,27 +152,78 @@ class PremiumScreen extends StatelessWidget {
                   ),
                 ),
                 Gap(35.h),
-                GestureDetector(
-                  onTap: () async {
-                    await setPremiumStatus(true);
-                    Navigator.pop(context, true);
-                  },
-                  child: TextButton(
-                    onPressed: () async {
-                      await setPremiumStatus(true);
-                      Navigator.pop(context, true);
-                    },
-                    child: Text(
-                      'Restore',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14.sp,
-                        height: 22 / 14,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Terms of Use',
+                        style: TextStyle(
+                          fontFamily: 'Axiforma',
+                          color: Colors.white,
+                          fontSize: 14.sp,
+                          height: 22 / 14,
+                        ),
                       ),
                     ),
-                  ),
+                    Gap(30.w),
+                    TextButton(
+                      onPressed: () async {
+                        await setPremiumStatus(true);
+                        Navigator.pop(context, true);
+                      },
+                      child: Text(
+                        'Restore',
+                        style: TextStyle(
+                          fontFamily: 'Axiforma',
+                          color: Colors.white,
+                          fontSize: 14.sp,
+                          height: 22 / 14,
+                        ),
+                      ),
+                    ),
+                    Gap(30.w),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Privacy Policy',
+                        style: TextStyle(
+                          fontFamily: 'Axiforma',
+                          color: Colors.white,
+                          fontSize: 14.sp,
+                          height: 22 / 14,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: -24.w,
+            child: Transform.rotate(
+              angle: 15 * pi / 180,
+              child: Image.asset(
+                'assets/premium_bottle.png',
+                width: 100.w,
+                height: 130.h,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 146.h,
+            right: -27.w,
+            child: Transform.rotate(
+              angle: -30 * pi / 180,
+              child: Image.asset(
+                'assets/premium_cocktail.png',
+                width: 63.w,
+                height: 97.h,
+              ),
             ),
           ),
         ],

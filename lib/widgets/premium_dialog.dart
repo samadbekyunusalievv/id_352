@@ -7,6 +7,12 @@ import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:id_352/data/colors.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
+Color lighten(Color color, [double amount = 0.3]) {
+  final hsl = HSLColor.fromColor(color);
+  final hslLight = hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
+  return hslLight.toColor();
+}
+
 class PremiumDialog extends StatelessWidget {
   final VoidCallback onDone;
 
@@ -27,8 +33,8 @@ class PremiumDialog extends StatelessWidget {
               Color(0xFF19A1BE),
               Color(0xFF7D4192),
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(20.r),
           border: const GradientBoxBorder(
@@ -93,6 +99,7 @@ class PremiumDialog extends StatelessWidget {
                 Gap(20.h),
                 GestureDetector(
                   onTap: () {
+                    Navigator.of(context).pop();
                     Navigator.pushNamed(context, '/premium');
                   },
                   child: Padding(
@@ -122,13 +129,16 @@ class PremiumDialog extends StatelessWidget {
                   onTap: onDone,
                   child: GradientText(
                     'Restore',
+                    gradientDirection: GradientDirection.ltr,
                     style: TextStyle(
                       fontFamily: 'Axiforma',
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
                       height: 25.66 / 16,
                     ),
-                    colors: MyColors.gradientColors,
+                    colors: MyColors.gradientColors
+                        .map((color) => lighten(color))
+                        .toList(),
                   ),
                 ),
               ],

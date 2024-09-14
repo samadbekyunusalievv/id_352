@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
@@ -115,119 +116,125 @@ class _EditNewMovieScreenState extends State<EditNewMovieScreen> {
               fit: BoxFit.fill,
             ),
           ),
-          Column(
-            children: [
-              SizedBox(height: 90.h),
-              Container(
-                width: 335.w,
-                height: 152.h,
-                margin: EdgeInsets.symmetric(horizontal: 20.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.r),
-                  image: DecorationImage(
-                    image: AssetImage('assets/movie_banner.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              SizedBox(height: 24.h),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 15.w),
-                        child: Text(
-                          'Name of the movie',
-                          style: TextStyle(
-                            fontFamily: 'Axiforma',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400,
-                            height: 1.5,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      _buildGradientBorderTextField(
-                        controller: _movieNameController,
-                        hintText: 'Name of the movie',
-                        focusNode: _movieNameFocusNode,
-                        onChanged: (value) => setState(() {}),
-                      ),
-                      SizedBox(height: 26.h),
-                      Padding(
-                        padding: EdgeInsets.only(left: 15.w),
-                        child: Text(
-                          'The terms of bingo on this movie (24)',
-                          style: TextStyle(
-                            fontFamily: 'Axiforma',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400,
-                            height: 1.5,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
-                      Column(
-                        children: List.generate(24, (index) {
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 20.h),
-                            child: _buildGradientBorderTextField(
-                              controller: _bingoControllers[index],
-                              hintText: 'Term',
-                              focusNode: _bingoFocusNodes[index],
-                              onChanged: (value) => setState(() {}),
-                            ),
-                          );
-                        }),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 16.h),
-              if (!_isAnyFieldFocused)
-                Center(
-                  child: GestureDetector(
-                    onTap: _isFormValid() ? _saveEditedMovie : null,
-                    child: Container(
-                      width: 295.w,
-                      height: 50.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        border: const GradientBoxBorder(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF19A1BE), Color(0xFF7D4192)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          width: 2.0,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: GradientText(
-                        'Save',
-                        style: TextStyle(
-                          fontFamily: 'Axiforma',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        colors: _isFormValid()
-                            ? [Color(0xFF19A1BE), Color(0xFF7D4192)]
-                            : [
-                                Color(0xFF19A1BE).withOpacity(0.5),
-                                Color(0xFF7D4192).withOpacity(0.5)
-                              ],
-                      ),
+          Positioned.fill(
+            child: Column(
+              children: [
+                SizedBox(height: 90.h),
+                Container(
+                  width: 335.w,
+                  height: 152.h,
+                  margin: EdgeInsets.symmetric(horizontal: 20.w),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/movie_banner.png'),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              SizedBox(height: 20.h),
-            ],
+                SizedBox(height: 24.h),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 15.w),
+                          child: Text(
+                            'Name of the movie',
+                            style: TextStyle(
+                              fontFamily: 'Axiforma',
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                              height: 1.5,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        _buildGradientBorderTextField(
+                          controller: _movieNameController,
+                          hintText: 'Name of the movie',
+                          focusNode: _movieNameFocusNode,
+                          onChanged: (value) => setState(() {}),
+                          maxLength: 55,
+                        ),
+                        SizedBox(height: 26.h),
+                        Padding(
+                          padding: EdgeInsets.only(left: 15.w),
+                          child: Text(
+                            'The terms of bingo on this movie (24)',
+                            style: TextStyle(
+                              fontFamily: 'Axiforma',
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                              height: 1.5,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+                        Column(
+                          children: List.generate(24, (index) {
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: 20.h),
+                              child: _buildGradientBorderTextField(
+                                controller: _bingoControllers[index],
+                                hintText: 'Term',
+                                focusNode: _bingoFocusNodes[index],
+                                onChanged: (value) => setState(() {}),
+                              ),
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (!_isAnyFieldFocused) SizedBox(height: 16.h),
+                if (!_isAnyFieldFocused)
+                  Center(
+                    child: GestureDetector(
+                      onTap: _isFormValid() ? _saveEditedMovie : null,
+                      child: Container(
+                        width: 295.w,
+                        height: 50.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.r),
+                          border: const GradientBoxBorder(
+                            gradient: LinearGradient(
+                              colors: [Color(0xFF19A1BE), Color(0xFF7D4192)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            width: 2.0,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: GradientText(
+                          'Save',
+                          style: TextStyle(
+                            fontFamily: 'Axiforma',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          colors: _isFormValid()
+                              ? [
+                                  const Color(0xFF19A1BE),
+                                  const Color(0xFF7D4192)
+                                ]
+                              : [
+                                  const Color(0xFF19A1BE).withOpacity(0.5),
+                                  const Color(0xFF7D4192).withOpacity(0.5)
+                                ],
+                        ),
+                      ),
+                    ),
+                  ),
+                if (!_isAnyFieldFocused) SizedBox(height: 20.h),
+              ],
+            ),
           ),
         ],
       ),
@@ -239,6 +246,7 @@ class _EditNewMovieScreenState extends State<EditNewMovieScreen> {
     required String hintText,
     required FocusNode focusNode,
     required ValueChanged<String> onChanged,
+    int? maxLength,
   }) {
     return Container(
       width: 335.w,
@@ -255,7 +263,7 @@ class _EditNewMovieScreenState extends State<EditNewMovieScreen> {
         ),
       ),
       child: Container(
-        margin: EdgeInsets.all(1),
+        margin: const EdgeInsets.all(1),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
           color: Colors.transparent,
@@ -271,6 +279,11 @@ class _EditNewMovieScreenState extends State<EditNewMovieScreen> {
               fontWeight: FontWeight.w400,
               color: Colors.white,
             ),
+            inputFormatters: maxLength != null
+                ? [
+                    LengthLimitingTextInputFormatter(maxLength),
+                  ]
+                : [],
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
@@ -282,6 +295,7 @@ class _EditNewMovieScreenState extends State<EditNewMovieScreen> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
               isCollapsed: true,
+              counterText: '',
             ),
           ),
         ),

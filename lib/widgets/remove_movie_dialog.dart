@@ -21,8 +21,6 @@ class RemoveMovieDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: MediaQuery.of(context).size.width - 40,
-        padding: EdgeInsets.all(20.w),
         decoration: BoxDecoration(
           color: const Color(0xFF322D60),
           borderRadius: BorderRadius.circular(20.r),
@@ -37,16 +35,19 @@ class RemoveMovieDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Gap(20.h),
-            Text(
-              'Are you sure you want to remove “$movieName”?',
-              style: TextStyle(
-                fontFamily: 'Axiforma',
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-                height: 22.4 / 16,
-                color: Colors.white,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Text(
+                'Are you sure you want to remove “$movieName”?',
+                style: TextStyle(
+                  fontFamily: 'Axiforma',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  height: 22.4 / 16,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
             Gap(20.h),
             Row(
@@ -55,7 +56,7 @@ class RemoveMovieDialog extends StatelessWidget {
                 GestureDetector(
                   onTap: onConfirm,
                   child: Container(
-                    width: 120.w,
+                    width: 130.w,
                     height: 40.h,
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -78,11 +79,11 @@ class RemoveMovieDialog extends StatelessWidget {
                     ),
                   ),
                 ),
-                Gap(20.w),
+                Gap(10.w),
                 GestureDetector(
                   onTap: onCancel,
                   child: Container(
-                    width: 120.w,
+                    width: 130.w,
                     height: 40.h,
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -107,6 +108,7 @@ class RemoveMovieDialog extends StatelessWidget {
                 ),
               ],
             ),
+            Gap(20.h),
           ],
         ),
       ),

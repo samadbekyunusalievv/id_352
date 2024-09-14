@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
+import 'package:gradient_borders/box_borders/gradient_box_border.dart';
+import 'package:id_352/data/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/bingo_data.dart';
@@ -88,8 +91,112 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  void _showCustomPopupMenu(
+      BuildContext context, MovieBingo movie, int index, GlobalKey key) {
+    final RenderBox button =
+        key.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final Offset buttonPosition =
+        button.localToGlobal(Offset.zero, ancestor: overlay);
+
+    OverlayEntry? entry;
+
+    entry = OverlayEntry(
+      builder: (context) => GestureDetector(
+        onTap: () {
+          entry?.remove();
+        },
+        behavior: HitTestBehavior.translucent,
+        child: Stack(
+          children: [
+            Positioned(
+              left: buttonPosition.dx - 65,
+              top: buttonPosition.dy + 5.h,
+              child: Container(
+                width: 70.w,
+                decoration: BoxDecoration(
+                  color: MyColors.backgroundColor,
+                  borderRadius: BorderRadius.circular(15.r),
+                  border: const GradientBoxBorder(
+                    gradient: LinearGradient(colors: MyColors.gradientColors),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Gap(7.h),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: Image.asset(
+                        'assets/edit_icon.png',
+                        width: 24.r,
+                        height: 24.r,
+                      ),
+                      onPressed: () {
+                        entry?.remove();
+                        _navigateToEditMovieScreen(context, movie, index);
+                      },
+                    ),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: Image.asset(
+                        'assets/delete_icon.png',
+                        width: 24.r,
+                        height: 24.r,
+                      ),
+                      onPressed: () {
+                        entry?.remove();
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return RemoveMovieDialog(
+                              movieName: movie.movieName,
+                              onConfirm: () {
+                                _deleteMovie(index);
+                                Navigator.pop(context);
+                              },
+                              onCancel: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    Gap(7.h),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(entry);
+  }
+
+  Widget _buildPopupMenu(BuildContext context, MovieBingo movie, int index) {
+    final GlobalKey key = GlobalKey();
+
+    return IconButton(
+      key: key,
+      icon: Icon(
+        Icons.more_vert,
+        color: Colors.white,
+        size: 24.r,
+      ),
+      onPressed: () {
+        _showCustomPopupMenu(context, movie, index, key);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<dynamic> itemsToDisplay = List.from(currentMovieList);
+    itemsToDisplay.add('AddMovieCard');
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -133,42 +240,25 @@ class _MainScreenState extends State<MainScreen> {
               padding: EdgeInsets.only(
                   right: 14.w, left: 14.w, top: 13.h, bottom: 5.h),
               child: ListView.builder(
-                itemCount: (currentMovieList.length / 2).ceil() + 1,
+                itemCount: (itemsToDisplay.length / 2).ceil(),
                 itemBuilder: (context, index) {
-                  if (index == (currentMovieList.length / 2).ceil()) {
-                    return GestureDetector(
-                      onTap: () => _navigateToAddMovieScreen(context),
-                      child: Row(
-                        children: [
-                          _buildAddMovieCard(),
-                          Spacer(),
-                        ],
-                      ),
-                    );
-                  } else {
-                    int firstMovieIndex = index * 2;
-                    int secondMovieIndex = firstMovieIndex + 1;
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 16.h),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildMovieCard(
-                              context,
-                              currentMovieList[firstMovieIndex],
-                              firstMovieIndex),
-                          SizedBox(width: 1.w),
-                          if (secondMovieIndex < currentMovieList.length)
-                            _buildMovieCard(
-                                context,
-                                currentMovieList[secondMovieIndex],
-                                secondMovieIndex),
-                          if (secondMovieIndex >= currentMovieList.length)
-                            Spacer(),
-                        ],
-                      ),
-                    );
-                  }
+                  int firstItemIndex = index * 2;
+                  int secondItemIndex = firstItemIndex + 1;
+
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 16.h),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildCard(context, itemsToDisplay[firstItemIndex]),
+                        SizedBox(width: 1.w),
+                        if (secondItemIndex < itemsToDisplay.length)
+                          _buildCard(context, itemsToDisplay[secondItemIndex]),
+                        if (secondItemIndex >= itemsToDisplay.length)
+                          const Spacer(),
+                      ],
+                    ),
+                  );
                 },
               ),
             ),
@@ -177,6 +267,20 @@ class _MainScreenState extends State<MainScreen> {
       ),
       backgroundColor: const Color(0xFF18181B),
     );
+  }
+
+  Widget _buildCard(BuildContext context, dynamic item) {
+    if (item is MovieBingo) {
+      int index = currentMovieList.indexOf(item);
+      return _buildMovieCard(context, item, index);
+    } else if (item == 'AddMovieCard') {
+      return GestureDetector(
+        onTap: () => _navigateToAddMovieScreen(context),
+        child: _buildAddMovieCard(),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget _buildMovieCard(BuildContext context, MovieBingo movie, int index) {
@@ -253,87 +357,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildPopupMenu(BuildContext context, MovieBingo movie, int index) {
-    return PopupMenuButton<String>(
-      color: Colors.transparent,
-      shadowColor: Colors.transparent,
-      padding: EdgeInsets.zero,
-      menuPadding: EdgeInsets.zero,
-      onSelected: (String result) {
-        if (result == 'edit') {
-          _navigateToEditMovieScreen(context, movie, index);
-        } else if (result == 'delete') {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return RemoveMovieDialog(
-                movieName: movie.movieName,
-                onConfirm: () {
-                  _deleteMovie(index);
-                  Navigator.pop(context);
-                },
-                onCancel: () {
-                  Navigator.pop(context);
-                },
-              );
-            },
-          );
-        }
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          child: Stack(
-            children: [
-              Image.asset(
-                'assets/popup_bg.png',
-                width: 77.w,
-                height: 112.h,
-                fit: BoxFit.contain,
-              ),
-              Positioned(
-                top: 20.h,
-                left: 26.w,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context, 'edit');
-                      },
-                      child: Image.asset(
-                        'assets/edit_icon.png',
-                        width: 24.w,
-                        height: 24.h,
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context, 'delete');
-                      },
-                      child: Image.asset(
-                        'assets/delete_icon.png',
-                        width: 24.w,
-                        height: 24.h,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-      icon: Icon(
-        Icons.more_vert,
-        color: Colors.white,
-        size: 24.r,
-      ),
-      offset: Offset(25.w, 5.h),
-      elevation: 0,
-    );
-  }
-
   Widget _buildAddMovieCard() {
     return Container(
       width: 172.w,
@@ -343,7 +366,7 @@ class _MainScreenState extends State<MainScreen> {
           Container(
             width: 172.w,
             height: 101.h,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/adding_movie.png'),
                 fit: BoxFit.fill,

@@ -117,6 +117,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: Text(
                                 'Notifications',
                                 style: TextStyle(
+                                  fontFamily: 'Axiforma',
                                   color: Colors.white,
                                   fontSize: 16.sp,
                                   height: 25 / 15,
@@ -150,6 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Text(
                         'NO ADS',
                         style: TextStyle(
+                          fontFamily: 'Axiforma',
                           color: Colors.white,
                           fontSize: 16.sp,
                           height: 22 / 16,
@@ -160,6 +162,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Text(
                         'FOR \$0.49',
                         style: TextStyle(
+                          fontFamily: 'Axiforma',
                           color: Colors.white,
                           fontSize: 24.sp,
                           height: 33 / 24,
@@ -191,6 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: GradientText(
                             'Premium',
                             style: TextStyle(
+                              fontFamily: 'Axiforma',
                               fontSize: 16.sp,
                               height: 26 / 16,
                               fontWeight: FontWeight.w700,
@@ -231,6 +235,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             text,
             colors: MyColors.gradientColors,
             style: TextStyle(
+              fontFamily: 'Axiforma',
               fontSize: 16.sp,
               height: 25 / 15,
               fontWeight: FontWeight.w500,

@@ -78,7 +78,11 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
         _completedColumns.map((col) => col.toString()).toList();
     await prefs.setStringList('${movie.movieName}_columns', savedColumns);
 
-    await prefs.remove('${movie.movieName}_direction');
+    if (_lineDirection != null) {
+      await prefs.setString('${movie.movieName}_direction', _lineDirection!);
+    } else {
+      await prefs.remove('${movie.movieName}_direction');
+    }
   }
 
   void _toggleMark(int index) {
@@ -97,12 +101,14 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
 
     if (!_markedGrid[index] && wasMarked) return;
 
-    if (lineCompleted) {
-      if (!previousLineCompleted) {
+    if (lineCompleted && !previousLineCompleted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _showTwiceDrinkDialog();
-      }
-    } else {
-      _showOnceDrinkDialog();
+      });
+    } else if (!lineCompleted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showOnceDrinkDialog();
+      });
     }
   }
 
@@ -115,11 +121,12 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
         return OnceDrinkDialog(
           onDone: () {
             Navigator.pop(context);
-            _checkForPremiumOrGameOverDialog();
           },
         );
       },
-    );
+    ).then((_) {
+      _checkForPremiumOrGameOverDialog();
+    });
   }
 
   void _showTwiceDrinkDialog() {
@@ -131,26 +138,29 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
         return TwiceDrinkDialog(
           onDone: () {
             Navigator.pop(context);
-            _checkForPremiumOrGameOverDialog();
           },
         );
       },
-    );
+    ).then((_) {
+      _checkForPremiumOrGameOverDialog();
+    });
   }
 
-  void _checkForPremiumOrGameOverDialog() {
+  Future<void> _checkForPremiumOrGameOverDialog() async {
     if (drinkDialogCount >= 3) {
       drinkDialogCount = 0;
       if (!isPremiumUser) {
-        _showPremiumDialog();
+        await _showPremiumDialog();
       }
-    } else if (_isGameOver && !gameOverDialogShown) {
+    }
+
+    if (_isGameOver && !gameOverDialogShown) {
       _showGameOverDialog();
     }
   }
 
-  void _showPremiumDialog() {
-    showDialog(
+  Future<void> _showPremiumDialog() async {
+    await showDialog(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
@@ -215,10 +225,9 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
 
   void _checkGameOver() {
     if (_markedGrid.every((marked) => marked)) {
-      _isGameOver = true;
-      if (drinkDialogCount == 0) {
-        _showGameOverDialog();
-      }
+      setState(() {
+        _isGameOver = true;
+      });
     }
   }
 
@@ -243,7 +252,13 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
     );
   }
 
-  void _restartGame() {
+  Future<void> _restartGame() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('${movie.movieName}_grid');
+    await prefs.remove('${movie.movieName}_rows');
+    await prefs.remove('${movie.movieName}_columns');
+    await prefs.remove('${movie.movieName}_direction');
+
     setState(() {
       _markedGrid =
           List<bool>.filled(min(movie.bingoOptions.length, maxGridSize), false);
@@ -253,8 +268,6 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
       gameOverDialogShown = false;
       _lineDirection = null;
       _isGameOver = false;
-
-      _saveGridState();
     });
   }
 
@@ -276,7 +289,7 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
 
   Widget _buildGridItem(int index) {
     if (index >= movie.bingoOptions.length) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     String displayText = movie.bingoOptions[index];
@@ -296,7 +309,7 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
         child: Stack(
           children: [
             ShaderMask(
-              shaderCallback: (bounds) => LinearGradient(
+              shaderCallback: (bounds) => const LinearGradient(
                 colors: [Color(0xFF19A1BE), Color(0xFF7D4192)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -316,19 +329,24 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
                 alignment: Alignment.center,
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.w),
-                    child: Text(
-                      displayText,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Axiforma',
-                        fontSize: 12.r,
-                        fontWeight: FontWeight.w600,
-                        height: 1.25.h,
-                        letterSpacing: -0.408,
-                        color: _markedGrid[index]
-                            ? Colors.white.withOpacity(0.5)
-                            : Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 5.w,
+                      vertical: 5.h,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        displayText,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Axiforma',
+                          fontSize: 12.r,
+                          fontWeight: FontWeight.w600,
+                          height: 1.25.h,
+                          letterSpacing: -0.408,
+                          color: _markedGrid[index]
+                              ? Colors.white.withOpacity(0.5)
+                              : Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -408,9 +426,9 @@ class _BingoGameScreenState extends State<BingoGameScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: Color(0xFF18181B),
+        backgroundColor: const Color(0xFF18181B),
         appBar: AppBar(
-          backgroundColor: Color(0xFF18181B),
+          backgroundColor: const Color(0xFF18181B),
           automaticallyImplyLeading: false,
           leading: IconButton(
             padding: EdgeInsets.only(left: 16.w),
